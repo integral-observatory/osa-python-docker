@@ -3,6 +3,13 @@
 set -x
 set -e
 
+if [ ${DEBUG:-yes} == "yes" ]; then
+    set -x
+fi
+
+exec 2> >(awk '{print "\033[90m", strftime("%Y-%m-%dT%H:%M:%S"), "\033[31m", $0, "\033[0m"}')
+exec > >(awk '{print "\033[90m", strftime("%Y-%m-%dT%H:%M:%S"), "\033[0m", $0}')
+
 export actions=$@
 
 export COMMIT_TIME=$(date --utc +%Y%m%d-%H%M%S)
@@ -15,7 +22,7 @@ export heasoft_version=${heasoft_version:-6.27.2}
 export install_prefix=/opt/heasoft/
 export dist_prefix=/dist/heasoft/
 
-export mirror_url="https://www.isdc.unige.ch/~savchenk/heasoft-${heasoft_version}src_no_xspec_modeldata.tar.gz"
+export mirror_url="https://www.isdc.unige.ch/~savchenk/cache/heasoft/heasoft-${heasoft_version}src_no_xspec_modeldata.tar.gz"
 export url="https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/lheasoft${heasoft_version}/heasoft-${heasoft_version}src_no_xspec_modeldata.tar.gz"
 
 export gzFile=`basename $url`
@@ -47,21 +54,24 @@ rm -fv $gzFile_fullpath
 cd heasoft-${heasoft_version}/BUILD_DIR
 
     
-scl enable devtoolset-7 bash
+#scl enable devtoolset-7 bash
 
 export CC=gcc
 export CXX=g++
 export F90=gfortran
 export FC=gfortran
+export PERL=/usr/bin/perl
+export PYTHON=$(which python)
 
 
-export CXXFLAGS="-fPIC"
-export CFLAGS="-fPIC"
-export LDFLAGS="-fPIC"
+export CXXFLAGS="-fPIC $(python-config --cflags)"
+export CFLAGS="-fPIC $(python-config --cflags)"
+export LDFLAGS="-fPIC $(python-config --ldflags)"
 
 echo "Configuring... (message saved in log_configure)"
+pwd
 date
-./configure --prefix=${install_prefix}  > /dev/null 2>&1
+./configure --prefix=${install_prefix}  > /dev/null 2>&1 
 date
 
 
@@ -76,7 +86,7 @@ export LDFLAGS="-fPIC"
 
 echo "Executing make..."
 date
-make > /dev/null 2>&1
+make # > /dev/null 2>&1
 date
 
 echo "Executing make install..."
