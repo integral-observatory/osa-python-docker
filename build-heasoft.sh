@@ -18,7 +18,7 @@ export OSA_BUILD_TARBALL_VERSION_LONG=$COMMIT_TIME
 export OSA_BUILD_TARBALL_VERSION=${CI_COMMIT_TAG:-$OSA_BUILD_TARBALL_VERSION_LONG}
 
 
-export heasoft_version=${heasoft_version:-6.27.2}
+export heasoft_version=${heasoft_version:-6.28}
 export install_prefix=/opt/heasoft/
 export dist_prefix=/dist/heasoft/
 
@@ -63,6 +63,7 @@ export FC=gfortran
 export PERL=/usr/bin/perl
 export PYTHON=$(which python)
 
+export | awk '{print "\033[33m", $0, "\033[0m"}'
 
 export CXXFLAGS="-fPIC $(python-config --cflags)"
 export CFLAGS="-fPIC $(python-config --cflags)"
@@ -84,9 +85,12 @@ export CXXFLAGS="-fPIC"
 export CFLAGS="-fPIC"
 export LDFLAGS="-fPIC"
 
+export PYTHON_INC=$(python-config --includes)
+export PYTHON_LIB=$(python-config --libs)
+
 echo "Executing make..."
 date
-make # > /dev/null 2>&1
+make  #> /dev/null 2>&1
 date
 
 echo "Executing make install..."

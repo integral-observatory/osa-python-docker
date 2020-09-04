@@ -1,15 +1,15 @@
 FROM ubuntu:20.04
 
 MAINTAINER "Volodymyr Savchenko"
-ARG python_version=3.8.3
-ARG heasoft_version=6.27.2
+ARG python_version=3.8.5
+ARG heasoft_version=6.28
 
 LABEL python_version=$python_version
 LABEL osa_version=$OSA_VERSION
 LABEL heasoft_version=$heasoft_version
 
 RUN echo -e "\033[34m Latest HEASoft: \033[0m"; \
-    curl https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/release/ | awk '/heasoft-6.28src.tar.gz/'
+    curl https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/release/ | awk '/heasoft-/'
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
@@ -103,15 +103,14 @@ ADD build-heasoft.sh /build-heasoft.sh
 
 RUN cp -fv /usr/bin/gfortran /usr/bin/g95
 
-#RUN exit 1
+RUN exit 1
     
 RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
     . /init.sh && \
     rm -rf /opt/heasoft || true && \
-    bash /build-heasoft.sh  || true
+    bash /build-heasoft.sh  
 
-RUN exit 1
-    
+RUN . /init.sh; which fstatistics || exit 1
     
 RUN p=$(ls -d /opt/heasoft/x86*/); echo "found HEADAS: $p"; echo 'export HEADAS="'$p'"; . $HEADAS/headas-init.sh' >> /init.sh
 
