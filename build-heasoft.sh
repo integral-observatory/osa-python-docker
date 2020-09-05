@@ -27,11 +27,7 @@ export url="https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/lheasoft${heasof
 
 export gzFile=`basename $url`
 export gzFile_fullpath=/heasoft-${heasoft_version}src_no_xspec_modeldata.tar.gz
-#dist_prefix/$gzFile
-#export gzFile_fullpath=$dist_prefix/$gzFile
 export logfile=$PACKAGE_ROOT/log/heasoft-build/`date +%Y-%m-%dT%H-%M-%S`.txt
-
-#export http_proxy=https://proxy.unige.
 
 export build_dir=/tmp/build
 mkdir -pv $build_dir
@@ -63,30 +59,22 @@ export FC=gfortran
 export PERL=/usr/bin/perl
 export PYTHON=$(which python)
 
-export | awk '{print "\033[33m", $0, "\033[0m"}'
 
-export CXXFLAGS="-fPIC $(python-config --cflags)"
-export CFLAGS="-fPIC $(python-config --cflags)"
-export LDFLAGS="-fPIC $(python-config --ldflags)"
+#export CXXFLAGS="-fPIC"
+#export CFLAGS="-fPIC"
+#export LDFLAGS="-fPIC"
 
-echo "Configuring... (message saved in log_configure)"
-pwd
+#export CXXFLAGS="-fPIC $(python-config --cflags)"
+#export CFLAGS="-fPIC $(python-config --cflags)"
+#export LDFLAGS="-fPIC $(python-config --ldflags)"
+
+echo "Configuring..."
+
 date
 ./configure --prefix=${install_prefix}  > /dev/null 2>&1 
 date
 
-
-## centos5 does not compile otherwise, weird
-
 export PATH=/heasoft/x86_64-unknown-linux-gnu-libc2.5/bin:$PATH
-
-##
-export CXXFLAGS="-fPIC"
-export CFLAGS="-fPIC"
-export LDFLAGS="-fPIC"
-
-export PYTHON_INC=$(python-config --includes)
-export PYTHON_LIB=$(python-config --libs)
 
 echo "Executing make..."
 date
@@ -107,3 +95,8 @@ rm -fv *gz
 find $install_prefix/heasoft -size +5M | grep ref | xargs rm -fv
 
 rm -rf $build_dir
+
+ls -lotr $install_prefix
+
+echo -e "\033[1m\033[32m Successfully installed  HEASoft \033[0m \033[32m$heasoft_version\033[0m in $install_prefix"
+
