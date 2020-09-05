@@ -104,25 +104,16 @@ ADD build-heasoft.sh /build-heasoft.sh
 
 RUN cp -fv /usr/bin/gfortran /usr/bin/g95
 
-RUN exit 1
     
 RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
     . /init.sh && \
     rm -rf /opt/heasoft || true && \
     bash /build-heasoft.sh  
 
-RUN . /init.sh; which fstatistics || exit 1
     
 RUN p=$(ls -d /opt/heasoft/x86*/); echo "found HEADAS: $p"; echo 'export HEADAS="'$p'"; . $HEADAS/headas-init.sh' >> /init.sh
 
-RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
-    . /init.sh && \
-    git clone https://github.com/volodymyrss/heasoft-heasp.git /heasoft-heasp && \
-    cd /heasoft-heasp/python && \
-    swig -python -c++ -classic heasp.i && \
-    hmake install && \
-    cd /heasoft-heasp && \
-    hmake install
+RUN . /init.sh; ls -l $(which fstatistics) || exit 1
 
 
 # Python modules
@@ -130,7 +121,8 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
 RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
     . /init.sh && \
     python -c 'import xspec; print(xspec.__file__)' && \
-    pip install numpy scipy ipython jupyter matplotlib pandas astropy==2.0.11
+    pip install wheel && \
+    pip install numpy scipy ipython jupyter matplotlib pandas astropy==2.0.11 jupyter mysql peewee
 
 
 RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
@@ -138,10 +130,7 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
     pip install -r https://raw.githubusercontent.com/volodymyrss/data-analysis/py3/requirements.txt && \
     pip install git+https://github.com/volodymyrss/data-analysis@py3 && \
     pip install git+https://github.com/volodymyrss/pilton && \
-    pip install git+https://github.com/volodymyrss/dda-ddosa
-
-RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
-    . /init.sh && \
+    pip install git+https://github.com/volodymyrss/dda-ddosa && \
     pip install git+https://github.com/volodymyrss/dqueue.git
 
 
@@ -154,20 +143,9 @@ RUN git clone https://github.com/threeML/astromodels.git && \
     export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
     . /init.sh && \
     ls -lotr && \
-    cd /astromodels/ && python setup.py install && pip install .
-
-RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
-    . /init.sh && \
+    cd /astromodels/ && python setup.py install && pip install . && \
     python -c 'import astromodels; print(astromodels.__file__)' 
 
-
-RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
-    . /init.sh && \
-    pip install jupyter
-
-RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
-    . /init.sh && \
-    pip install pymysql peewee
 
 ADD tests /tests
 
