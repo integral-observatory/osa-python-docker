@@ -9,8 +9,6 @@ LABEL python_version=$python_version
 LABEL osa_version=$OSA_VERSION
 LABEL heasoft_version=$heasoft_version
 
-RUN echo -e "\033[34m Latest HEASoft: \033[0m"; \
-    curl https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/release/ | awk '/heasoft-/'
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
@@ -34,6 +32,8 @@ RUN apt-get -y install \
                    libcurl4 libcurl4-gnutls-dev curl \
                    libgsl-dev libtinfo-dev libtinfo5
 
+RUN echo -e "\033[34m Latest HEASoft: \033[0m"; \
+    curl https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/release/ | awk '/heasoft-/'
 
 RUN dpkg-reconfigure --frontend noninteractive tzdata
 
