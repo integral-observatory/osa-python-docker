@@ -31,4 +31,9 @@ jupyter: build
 	docker run --user $(id -u) $(IMAGE) bash -c 'export HOME_OVERRRIDE=/tmp; source /init.sh; jupyter notebook --ip 0.0.0.0 --no-browser'
 
 test: build
-	docker run --user $(shell id -u) $(IMAGE) bash -c 'cd /tests; ls -ltor; make'
+	docker run \
+		-v $(PWD):/home/jovyan \
+		--user $(shell id -u) \
+		--entrypoint bash \
+		-e DEBUG \
+			$(IMAGE) -c 'cd /tests; ls -ltor; make'

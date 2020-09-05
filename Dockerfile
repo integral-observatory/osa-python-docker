@@ -19,7 +19,7 @@ RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ focal-updates main universe' 
 RUN apt-get update -y
 
 RUN apt-get -y install \
-                   git curl make  \
+                   git curl make mysql-client libmysqlclient-dev \
                    g++ gcc gfortran build-essential libgfortran5 llvm\
                    libxpm-dev libxext-dev file xorg-dev libxt-dev \
                    libreadline8 libreadline-dev libbz2-dev \
@@ -71,13 +71,13 @@ ARG OSA_VERSION=11.1-3-g87cee807-20200410-144247
 ARG OSA_PLATFORM=Ubuntu_20.04_x86_64
 
 RUN cd /opt/ && \
-    wget -q https://www.isdc.unige.ch/~savchenk/gitlab-ci/integral/build/osa-build-binary-tarball/${OSA_PLATFORM}/${OSA_VERSION}/build-latest/osa-${OSA_VERSION}-${OSA_PLATFORM}.tar.gz && \
-    tar xzf osa-${OSA_VERSION}-*.tar.gz && \
-    rm -fv osa-${OSA_VERSION}-*.tar.gz && \
-    mv osa11 osa; \
+    wget -q https://www.isdc.unige.ch/~savchenk/gitlab-ci/integral/build/osa-build-binary-tarball/Ubuntu_20.04_x86_64/build-latest/osa--Ubuntu_20.04_x86_64.tar.gz && \
+    tar xzf osa--*.tar.gz && \
+    rm -fv osa--*.tar.gz && \
     wget -q https://www.isdc.unige.ch/integral/download/osa/sw/10.2/osa10.2-bin-linux64.tar.gz && \
     tar xzf osa10.2-bin-linux64.tar.gz && \
-    rm -fv osa10.2-bin-linux64.tar.gz
+    rm -fv osa10.2-bin-linux64.tar.gz 
+
 
 ARG isdc_ref_cat_version=43.0
 
@@ -134,7 +134,6 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
     pip install git+https://github.com/volodymyrss/dqueue.git
 
 
-ADD activate.sh /activate.sh
 
 
 # 3ml
@@ -144,11 +143,27 @@ RUN git clone https://github.com/threeML/astromodels.git && \
     . /init.sh && \
     ls -lotr && \
     cd /astromodels/ && python setup.py install && pip install . && \
-    python -c 'import astromodels; print(astromodels.__file__)' 
+    cd / && python -c 'import astromodels; print(astromodels.__file__)' 
 
+# default osa
 
-ADD tests /tests
+RUN cd /opt; ln -s osa11 osa
+
+# entrypoint
 
 RUN . /init.sh; pip install jupyterlab
 
+ADD activate.sh /activate.sh
+
+ADD tests /tests
+
 ENTRYPOINT bash -c 'export HOME_OVERRRIDE=/home/jovyan; cd /home/jovyan; . /init.sh; jupyter lab --ip 0.0.0.0 --no-browser'
+
+
+## Latest available build of OSA needs this. TBD if can be built without
+
+RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty main universe' >> /etc/apt/sources.list
+RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty-updates main universe' >> /etc/apt/sources.list
+
+RUN apt-get update -y
+RUN apt-get install -y g++-4.4 gcc-4.4 gfortran-4.4
