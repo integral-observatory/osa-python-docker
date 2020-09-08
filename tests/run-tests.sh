@@ -20,3 +20,5 @@ for t in $(ls $PWD/test_*.sh); do
         fi
     )
 done
+
+exit 0

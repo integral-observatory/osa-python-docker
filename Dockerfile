@@ -32,6 +32,7 @@ RUN apt-get -y install \
                    xz-utils tk-dev vim lsb-core libextutils-f77-perl \
                    libcurl4 libcurl4-gnutls-dev curl \
                    libgsl-dev libtinfo-dev libtinfo5 \
+                   libpcre++-dev\
                    gawk
 
 RUN dpkg-reconfigure --frontend noninteractive tzdata
@@ -67,8 +68,14 @@ RUN cd /opt/ && \
     tar xzf osa10.2-bin-linux64.tar.gz && \
     rm -fv osa10.2-bin-linux64.tar.gz  
 
+RUN mkdir -pv /opt/osa11 && rsync -avu /opt/osa10.2/root/ /opt/osa11/root/
+RUN ls -ltr /opt/osa11/root
+
+RUN ln -s /usr/lib/x86_64-linux-gnu/libpcre++.so /usr/lib/libpcre.so.0
+RUN apt-get install -y g++-4.8 gcc-4.8 gfortran-4.8 
 
 ADD build-osa.sh /build-osa.sh
+RUN bash /build-osa.sh
 
 ARG isdc_ref_cat_version=43.0
 
@@ -165,4 +172,3 @@ ENTRYPOINT bash -c 'export HOME_OVERRRIDE=/home/jovyan; cd /home/jovyan; . /init
 #RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty-updates main universe' >> /etc/apt/sources.list
 
 #RUN apt-get update -y
-#RUN apt-get install -y g++-4.4 gcc-4.4 gfortran-4.4 
