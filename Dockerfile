@@ -1,11 +1,10 @@
-FROM ubuntu:20.04
+FROM ubuntu:18.04
 
 MAINTAINER "Volodymyr Savchenko"
 ARG PYTHON_VERSION=3.8.5
 ARG HEASOFT_VERSION=6.28
 
 ARG OSA_VERSION=11.1-3-g87cee807-20200410-144247 
-ARG OSA_PLATFORM=Ubuntu_20.04_x86_64
 
 LABEL python_version=$PYTHON_VERSION
 LABEL heasoft_version=$HEASOFT_VERSION
@@ -15,8 +14,8 @@ LABEL osa_version=$OSA_VERSION
 ENV DEBIAN_FRONTEND=noninteractive
 RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
 
-RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ focal main universe' >> /etc/apt/sources.list
-RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ focal-updates main universe' >> /etc/apt/sources.list
+RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ bionic main universe' >> /etc/apt/sources.list
+RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ bionic-updates main universe' >> /etc/apt/sources.list
 
 RUN apt-get update -y
 
@@ -24,7 +23,7 @@ RUN apt-get -y install \
                    git curl make mysql-client libmysqlclient-dev \
                    g++ gcc gfortran build-essential libgfortran5 llvm\
                    libxpm-dev libxext-dev file xorg-dev libxt-dev \
-                   libreadline8 libreadline-dev libbz2-dev \
+                   libreadline7 libreadline-dev libbz2-dev \
                    perl-modules \
                    zlib1g-dev libpng-dev  libsqlite3-dev \
                    libssl-dev zlib1g-dev libbz2-dev \
@@ -32,7 +31,8 @@ RUN apt-get -y install \
                    libsqlite3-dev wget libncurses5-dev libncursesw5-dev \
                    xz-utils tk-dev vim lsb-core libextutils-f77-perl \
                    libcurl4 libcurl4-gnutls-dev curl \
-                   libgsl-dev libtinfo-dev libtinfo5
+                   libgsl-dev libtinfo-dev libtinfo5 \
+                   gawk
 
 RUN dpkg-reconfigure --frontend noninteractive tzdata
 
@@ -63,15 +63,12 @@ RUN . /etc/profile && pyenv shell $PYTHON_VERSION && pyenv global $PYTHON_VERSIO
 
 
 RUN cd /opt/ && \
-    wget -q https://www.isdc.unige.ch/~savchenk/gitlab-ci/integral/build/osa-build-binary-tarball/${OSA_PLATFORM}/latest/build-latest/osa-${OSA_VERSION}-${OSA_PLATFORM}.tar.gz && \
-    tar xzf osa-*.tar.gz && \
-    rm -fv osa-*.tar.gz
-
-RUN cd /opt/ && \
     wget -q https://www.isdc.unige.ch/integral/download/osa/sw/10.2/osa10.2-bin-linux64.tar.gz && \
     tar xzf osa10.2-bin-linux64.tar.gz && \
     rm -fv osa10.2-bin-linux64.tar.gz  
 
+
+ADD build-osa.sh /build-osa.sh
 
 ARG isdc_ref_cat_version=43.0
 
@@ -164,8 +161,8 @@ ENTRYPOINT bash -c 'export HOME_OVERRRIDE=/home/jovyan; cd /home/jovyan; . /init
 
 ## Latest available build of OSA needs this. TBD if can be built without
 
-RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty main universe' >> /etc/apt/sources.list
-RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty-updates main universe' >> /etc/apt/sources.list
+#RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty main universe' >> /etc/apt/sources.list
+#RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty-updates main universe' >> /etc/apt/sources.list
 
-RUN apt-get update -y
-RUN apt-get install -y g++-4.4 gcc-4.4 gfortran-4.4
+#RUN apt-get update -y
+#RUN apt-get install -y g++-4.4 gcc-4.4 gfortran-4.4 
