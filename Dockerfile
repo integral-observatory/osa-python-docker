@@ -1,11 +1,11 @@
-FROM ubuntu:20.04
+FROM ubuntu:18.04
 
 MAINTAINER "Volodymyr Savchenko"
 ARG PYTHON_VERSION=3.8.5
 ARG HEASOFT_VERSION=6.28
 
 ARG OSA_VERSION=11.1-3-g87cee807-20200410-144247 
-ARG OSA_PLATFORM=Ubuntu_20.04_x86_64
+ARG OSA_PLATFORM=Ubuntu_16.04_x86_64
 
 LABEL python_version=$PYTHON_VERSION
 LABEL heasoft_version=$HEASOFT_VERSION
@@ -15,8 +15,8 @@ LABEL osa_version=$OSA_VERSION
 ENV DEBIAN_FRONTEND=noninteractive
 RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
 
-RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ focal main universe' >> /etc/apt/sources.list
-RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ focal-updates main universe' >> /etc/apt/sources.list
+RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ bionic main universe' >> /etc/apt/sources.list
+RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ bionic-updates main universe' >> /etc/apt/sources.list
 
 RUN apt-get update -y
 
@@ -24,7 +24,7 @@ RUN apt-get -y install \
                    git curl make mysql-client libmysqlclient-dev \
                    g++ gcc gfortran build-essential libgfortran5 llvm\
                    libxpm-dev libxext-dev file xorg-dev libxt-dev \
-                   libreadline8 libreadline-dev libbz2-dev \
+                   libreadline7 libreadline-dev libbz2-dev \
                    perl-modules \
                    zlib1g-dev libpng-dev  libsqlite3-dev \
                    libssl-dev zlib1g-dev libbz2-dev \
@@ -32,7 +32,8 @@ RUN apt-get -y install \
                    libsqlite3-dev wget libncurses5-dev libncursesw5-dev \
                    xz-utils tk-dev vim lsb-core libextutils-f77-perl \
                    libcurl4 libcurl4-gnutls-dev curl \
-                   libgsl-dev libtinfo-dev libtinfo5
+                   libgsl-dev libtinfo-dev libtinfo5 \
+                   gawk
 
 RUN dpkg-reconfigure --frontend noninteractive tzdata
 
