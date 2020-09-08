@@ -18,7 +18,7 @@ export OSA_BUILD_TARBALL_VERSION_LONG=$COMMIT_TIME
 export OSA_BUILD_TARBALL_VERSION=${CI_COMMIT_TAG:-$OSA_BUILD_TARBALL_VERSION_LONG}
 
 
-export heasoft_version=${heasoft_version:-6.28}
+export heasoft_version=${HEASOFT_VERSION:-6.28}
 export install_prefix=/opt/heasoft/
 export dist_prefix=/dist/heasoft/
 

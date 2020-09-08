@@ -1,13 +1,15 @@
 FROM ubuntu:20.04
 
 MAINTAINER "Volodymyr Savchenko"
-#ARG python_version=3.7.6
-ARG python_version=3.8.5
-ARG heasoft_version=6.28
+ARG PYTHON_VERSION=3.8.5
+ARG HEASOFT_VERSION=6.28
 
-LABEL python_version=$python_version
+ARG OSA_VERSION=11.1-3-g87cee807-20200410-144247 
+ARG OSA_PLATFORM=Ubuntu_20.04_x86_64
+
+LABEL python_version=$PYTHON_VERSION
+LABEL heasoft_version=$HEASOFT_VERSION
 LABEL osa_version=$OSA_VERSION
-LABEL heasoft_version=$heasoft_version
 
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -32,9 +34,6 @@ RUN apt-get -y install \
                    libcurl4 libcurl4-gnutls-dev curl \
                    libgsl-dev libtinfo-dev libtinfo5
 
-RUN echo -e "\033[34m Latest HEASoft: \033[0m"; \
-    curl https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/release/ | awk '/heasoft-/'
-
 RUN dpkg-reconfigure --frontend noninteractive tzdata
 
 
@@ -49,17 +48,12 @@ RUN git clone git://github.com/yyuu/pyenv.git /pyenv && \
 
 RUN . /etc/profile && \
         which pyenv && \
-        PYTHON_CONFIGURE_OPTS="--enable-shared"  CFLAGS="-fPIC" CXXFLAGS="-fPIC" pyenv install $python_version && \
+        PYTHON_CONFIGURE_OPTS="--enable-shared"  CFLAGS="-fPIC" CXXFLAGS="-fPIC" pyenv install $PYTHON_VERSION && \
         pyenv versions
 
-RUN . /etc/profile && pyenv shell $python_version && pyenv global $python_version && pyenv versions && pyenv rehash
+RUN . /etc/profile && pyenv shell $PYTHON_VERSION && pyenv global $PYTHON_VERSION && pyenv versions && pyenv rehash
 
 
-ADD init.sh /init.sh
-RUN echo '. /etc/profile' >> /init.sh
-
-# needed for heasoft
-RUN . /init.sh && pip install numpy scipy 
 
 
 
@@ -67,16 +61,16 @@ RUN . /init.sh && pip install numpy scipy
 
 # OSA 
 
-ARG OSA_VERSION=11.1-3-g87cee807-20200410-144247 
-ARG OSA_PLATFORM=Ubuntu_20.04_x86_64
 
 RUN cd /opt/ && \
-    wget -q https://www.isdc.unige.ch/~savchenk/gitlab-ci/integral/build/osa-build-binary-tarball/Ubuntu_20.04_x86_64/build-latest/osa--Ubuntu_20.04_x86_64.tar.gz && \
-    tar xzf osa--*.tar.gz && \
-    rm -fv osa--*.tar.gz && \
+    wget -q https://www.isdc.unige.ch/~savchenk/gitlab-ci/integral/build/osa-build-binary-tarball/${OSA_PLATFORM}/latest/build-latest/osa-${OSA_VERSION}-${OSA_PLATFORM}.tar.gz && \
+    tar xzf osa-*.tar.gz && \
+    rm -fv osa-*.tar.gz
+
+RUN cd /opt/ && \
     wget -q https://www.isdc.unige.ch/integral/download/osa/sw/10.2/osa10.2-bin-linux64.tar.gz && \
     tar xzf osa10.2-bin-linux64.tar.gz && \
-    rm -fv osa10.2-bin-linux64.tar.gz 
+    rm -fv osa10.2-bin-linux64.tar.gz  
 
 
 ARG isdc_ref_cat_version=43.0
@@ -97,6 +91,14 @@ RUN wget -q http://ds9.si.edu/download/ubuntu18/ds9.ubuntu18.8.2b2.tar.gz && \
 
 # HEASoft
 
+RUN echo -e "\033[34m Latest HEASoft: \033[0m"; \
+    curl https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/release/ | awk '/heasoft-/'
+
+ADD init.sh /init.sh
+RUN echo '. /etc/profile' >> /init.sh
+
+# needed for heasoft
+RUN . /init.sh && pip install numpy scipy 
 
 ADD build-heasoft.sh /build-heasoft.sh 
 
