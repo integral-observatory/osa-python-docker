@@ -40,4 +40,4 @@ jupyter: build
 
 test:
 	mkdir -p /tmp/test_integralsw
-	docker run -it --net=host --user $(shell id -u) -v /tmp/test_integralsw:/home/jovyan $(IMAGE) bash -c 'cd /tests; ls -ltor; make'
+	docker run -it --net=host --user $(shell id -u) -v /tmp/test_integralsw:/home/jovyan --entrypoint="" $(IMAGE) bash -c 'cd /tests; ls -ltor; make'
