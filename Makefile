@@ -39,4 +39,5 @@ jupyter: build
 	docker run -e DISPLAY=${DISPLAY} -v $(PWD):/home/jovyan -v /etc/passwd:/etc/passwd -it --entrypoint='' -v /tmp/.X11-unix:/tmp/.X11-unix -v ${HOME}/.Xauthority:/home/jovyan/.Xauthority:rw --net=host --user $(DUSER) $(IMAGE) bash -c 'export HOME_OVERRRIDE=/tmp; source /init.sh; jupyter notebook --ip 0.0.0.0 --no-browser --port=1234'
 
 test:
-	docker run --user $(shell id -u) $(IMAGE) bash -c 'cd /tests; ls -ltor; make'
+	mkdir -p /tmp/test_integralsw
+	docker run -it --net=host --user $(shell id -u) -v /tmp/test_integralsw:/home/jovyan $(IMAGE) bash -c 'cd /tests; ls -ltor; make'
