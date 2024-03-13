@@ -41,3 +41,10 @@ jupyter: build
 test:
 	mkdir -p /tmp/test_integralsw
 	docker run -it --net=host --user $(shell id -u) -v /tmp/test_integralsw:/home/jovyan --entrypoint="" $(IMAGE) bash -c 'cd /tests; ls -ltor; make'
+
+squash: build
+	docker build --build-arg IMAGE_NAME=$(IMAGE) . -t $(IMAGE)-noentry -f Dockerfile-noentry
+
+singularity: squash
+	docker run -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/output --privileged -t --rm quay.io/singularity/docker2singularity $(IMAGE)-noentry
+
