@@ -8,7 +8,7 @@ echo "${COMMAND:=jupyter notebook --no-browser --ip=0.0.0.0}"
 
 
 echo "OSA_VERSION == ${OSA_VERSION:=latest}"
-echo "OSA_DOCKER_IMAGE == ${OSA_DOCKER_IMAGE:=integralsw/osa-python27:${OSA_VERSION}}"
+echo "OSA_DOCKER_IMAGE == ${OSA_DOCKER_IMAGE:=integralsw/osa-python:${OSA_VERSION}}"
 echo "OSA_DOCKER_PULL == \"${OSA_DOCKER_PULL:=yes}\""
 
 [ "x$OSA_DOCKER_PULL" == "xyes" ] && {
@@ -35,13 +35,14 @@ docker run \
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v $WORKDIR:/home/integral \
-    -v /mnt:/mnt \
     -v $REP_BASE_PROD/scw:/data/scw:ro \
     -v $REP_BASE_PROD/aux:/data/aux:ro \
     -v $CURRENT_IC/ic:/data/ic:ro \
     -v $CURRENT_IC/idx:/data/idx:ro \
+    -v /etc/passwd:/etc/passwd \
     -p 8900:8888 \
-    --rm -it  --user ${USER:-$(id -u)} \
+    --entrypoint='' \
+    --rm -it  --user $(id -u) \
         ${OSA_DOCKER_IMAGE} bash -c "
 
 export HOME_OVERRIDE=/home/integral
