@@ -1,0 +1,5 @@
+ARG IMAGE_NAME=placeholder 
+FROM $IMAGE_NAME
+
+
+ENTRYPOINT []
