@@ -172,10 +172,23 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
 
 RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
     source /init.sh && \
-    pip install pymysql peewee
+    pip install pymysql peewee  ogip 'jsonschema<4.0' ogip==0.2.0 nlopt==2.6.1 tqdm dynaconf jupyterlab
+
+
+WORKDIR /tmp
+RUN wget https://curl.haxx.se/download/curl-7.80.0.tar.gz && \
+    tar -xzvf curl-7.80.0.tar.gz && \
+    cd curl-7.80.0 && \
+    ./configure --prefix=/usr/local --with-ssl && \
+    make && \
+    make install && \
+    ldconfig && \
+    cd /tmp && \
+    rm -rf curl-7.80.0.tar.gz curl-7.80.0
+WORKDIR /
+
+RUN yum -y update && yum -y install ImageMagick
 
 ADD tests /tests
-
-RUN source /init.sh; pip install jupyterlab
 
 ENTRYPOINT bash -c 'export HOME_OVERRRIDE=/home/jovyan; cd /home/jovyan; source /init.sh; jupyter lab --ip 0.0.0.0 --no-browser'
