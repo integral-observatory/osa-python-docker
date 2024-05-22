@@ -35,7 +35,7 @@ pull:
 #Dockerfile: Dockerfile.j2
 #	j2 -e 'OSA_VERSION="$(OSA_IMAGE_TAG)"' Dockerfile.j2 -d -o Dockerfile
 
-jupyter: build
+jupyter: 
 	docker run -e DISPLAY=${DISPLAY} -v $(PWD):/home/jovyan -v /etc/passwd:/etc/passwd -it --entrypoint='' -v /tmp/.X11-unix:/tmp/.X11-unix -v ${HOME}/.Xauthority:/home/jovyan/.Xauthority:rw --net=host --user $(DUSER) $(IMAGE) bash -c 'export HOME_OVERRRIDE=/tmp; source /init.sh; jupyter notebook --ip 0.0.0.0 --no-browser --port=1234'
 
 test:
