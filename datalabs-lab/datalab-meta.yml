@@ -1,0 +1,20 @@
+title: OSA11-python-lab
+#name: INTEGRAL MMODA Notebooks
+alternateName: OSA-lab
+abstract: OSA+Haasoft with python extensions lab
+description: >
+ Using this datalabs, you will be able to run OSA from a jupyter lab 
+distribution.license: None
+domain: https://data.esa.int/esado/domainSCI
+thumbnailUrl: https://www.astro.unige.ch/mmoda/sites/all/themes/bootstrap_mmoda/favicon.ico
+language: english
+version: 0.1.0
+ 
+creator.name: Carlo Ferrigno
+instrument: ISGRI JEM-X
+mission: INTEGRAL
+ 
+# Optional fields:
+contactPoint:
+  email: carlo.ferrigno@unige.ch
+  organisation-name: University of Geneva
