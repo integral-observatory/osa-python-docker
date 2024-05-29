@@ -8,7 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y
 
 RUN apt-get install --no-install-recommends --assume-yes -y \
-    libssl-dev=1.1.1f-1ubuntu2.20 \
+    libssl-dev=1.1.1f-1ubuntu2.22 \
     devscripts=2.20.2ubuntu2 \
     libglu1-mesa-dev=9.0.1-1build1 \
     libfftw3-dev=3.3.8-2ubuntu1 \
@@ -43,8 +43,6 @@ RUN apt-get install --no-install-recommends -y \
     fftw-dev=2.1.5-4.2build2 \
     file=1:5.38-4 \
     gfortran=4:9.3.0-1ubuntu2 \
-    git=1:2.25.1-1ubuntu3.11 \
-    git-lfs=2.9.2-1 \
     iptables=1.8.4-3ubuntu2.1 \
     libgfortran5=10.5.0-1ubuntu1~20.04 \
     libjpeg-dev=8c-2ubuntu8 \
@@ -81,10 +79,15 @@ RUN apt-get install --no-install-recommends -y \
     zlib1g=1:1.2.11.dfsg-2ubuntu1.5 \
     libxslt1-dev=1.1.34-4ubuntu0.20.04.1
 
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get install --no-install-recommends -y --allow-downgrades \
     bison=2:3.5.1+dfsg-1 \
     libgl1-mesa-glx=21.2.6-0ubuntu0.1~20.04.2 \
-    libncurses5-dev=6.2-0ubuntu2.1 
+    git-man=1:2.25.1-1ubuntu3.12 \
+    git=1:2.25.1-1ubuntu3.12 \
+    git-lfs=2.9.2-1 \
+    libncurses5-dev=6.2-0ubuntu2.1 \
+    less=551-1ubuntu0.3
+
 
 RUN apt-get install --no-install-recommends -y \
     libxext6=2:1.3.4-0ubuntu1 \
