@@ -193,7 +193,7 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
 #    bash build-heasoft.sh build
 
 WORKDIR /opt
-RUN wget http://www.isdc.unige.ch/~ferrigno/Downloads/heasoft_Ubuntu_20.04_x86_6.tar.gz && \
+RUN wget http://www.isdc.unige.ch/download/osa/sw/heasoft/heasoft-Ubuntu_20.04_x86_6.tar.gz && \
     tar xfz heasoft_Ubuntu_20.04_x86_6.tar.gz && \
     rm heasoft_Ubuntu_20.04_x86_6.tar.gz
 
