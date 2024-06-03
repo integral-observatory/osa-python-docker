@@ -1,90 +1,12 @@
 ## original: https://gitlab.astro.unige.ch/savchenk/osa-docker-python/-/blob/master/Dockerfile
 
-#ARG JL_BASE_VERSION=stable
-#ARG REGISTRY=scidockreg.esac.esa.int:62530
-#FROM ${REGISTRY}/datalabs/jl_base:${JL_BASE_VERSION}-20.4
-#ARG DEBIAN_FRONTEND=noninteractive
+ARG JL_BASE_VERSION=stable
+ARG REGISTRY=scidockreg.esac.esa.int:62530
+FROM ${REGISTRY}/datalabs/jl_base:${JL_BASE_VERSION}-20.4
+ARG DEBIAN_FRONTEND=noninteractive
 
-FROM ubuntu:20.04
-
-ARG   DEBIAN_FRONTEND=noninteractive
-RUN   apt-get update \
-&&  apt-get install -y gosu libnss-ldapd build-essential libssl-dev curl
-RUN   curl -LO https://github.com/krallin/tini/releases/download/v0.18.0/tini
-RUN   mv tini /sbin/tini
-RUN   chmod +x /sbin/tini
-RUN apt-get update \
-&& DEBIAN_FRONTEND=noninteractive \
-&& apt-get install --no-install-recommends -y \
-        python3-pip 
-RUN pip install xvfbwrapper
-RUN apt-get update \
-&& DEBIAN_FRONTEND=noninteractive \
-&& apt-get install --no-install-recommends -y \
-  gcc g++ make sudo \
-  build-essential --no-install-recommends apt-utils \
-  zip unzip curl man wget make emacs vim \
-  libffi-dev libzbar-dev libzbar0 libxml2-dev libxslt-dev python3-dev python3-lxml \
-  nodejs yarn\
-  software-properties-common coreutils \
-  python3-pytest-xvfb python3-xvfbwrapper xvfb \
-&& apt-get clean \
-&& rm -rf /var/lib/apt/lists/*
-RUN apt-get update \
-&& apt-add-repository ppa:git-core/ppa \
-&& apt-get update \
-&& apt-get install --no-install-recommends git -y \
-&& apt-get clean \
-&& rm -rf /var/lib/apt/lists/*
- 
-WORKDIR /opt/
-RUN curl -fsSL -o Miniconda3-Linux-x86_64.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-&& bash Miniconda3-Linux-x86_64.sh -b -p /opt/miniconda \
-&& rm -rf Miniconda3-Linux-x86_64.sh
-ENV PATH /opt/miniconda/bin:$PATH
-RUN conda init \
-&& conda update --all \
-&& conda config --append channels conda-forge \
-&& conda install -y nodejs
-
-
-RUN python -m pip --no-cache-dir install \
-  jupyterlab==3.6.5 \
-  jupyter_client==7.1.1 \
-  terminado==0.12.1 \
-  jupyterlab-git==0.42.0 \
-  jupyterlab_theme_solarized_dark==2.0.1 \
-  qtconsole==5.2.2 \
-  IPython==8.15.0 \
-  nbclient==0.8.0 \
-  notebook==6.4.7 \
-  matplotlib==3.5.1 \
-  pandas==1.4.0 \
-  ipykernel==6.25.2 \
-  ipyleaflet==0.17.3 \
-  qtpy==2.0.0 \
-  ipywidgets==8.1.0 \
-  jupyterlab_widgets==3.0.8 \
-  lxml==4.9.3 \
-  flask-cors==3.0.10 \
-  beautifulsoup4==4.10.0 \
-  configparser==5.2.0 \
-  ipyevents==2.0.1 \
-  astroquery==0.4.5 \
-  astropy==6.0.0 \
-&& jupyter labextension install jupyter-matplotlib --no-build \
-&& jupyter labextension install jupyter-leaflet --no-build \
-&& jupyter labextension disable "@jupyterlab/apputils-extension:announcements" \
-&& jupyter lab build --minimize=False \
-&& python -m pip --no-cache-dir install pyesasky==1.9.5 \
-&& jupyter labextension install pyesasky --no-build \
-&& jupyter lab build --minimize=False \
-&& jupyter nbextension install --py pyesasky --sys-prefix \
-&& jupyter nbextension enable --py pyesasky --sys-prefix \
-&& jupyter lab build --minimize=False \
-&& ln -s /opt/miniconda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
-
-
+# To ensure bash is used
+SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update -y
 
@@ -99,8 +21,29 @@ RUN apt-get install --no-install-recommends --assume-yes -y \
     python3-tk=3.8.10-0ubuntu1~20.04 \
     cabal-install=2.4.0.0-2build3
 
-# missing packages (needed??):
-# fpm compat-gcc-44 compat-gcc-44-c++ compat-gcc-44-c++.gfortran
+RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty main universe' >> /etc/apt/sources.list
+RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty-updates main universe' >> /etc/apt/sources.list
+
+RUN apt-get update -y
+RUN apt-get install -y \
+    curl=7.68.0-1ubuntu2.22 \
+    g++-4.4=4.4.7-8ubuntu1 \
+    gcc-4.4=4.4.7-8ubuntu1 \
+    gfortran-4.4=4.4.7-8ubuntu1
+
+RUN apt search libreadline6-dev libgfortran
+
+RUN apt-get -y install \
+    zlib1g-dev=1:1.2.11.dfsg-2ubuntu1.5 \
+    libreadline6=6.3-4ubuntu2 \
+    build-essential=12.8ubuntu1.1 \
+    libbz2-dev=1.0.8-2 \
+    libsqlite3-dev=3.31.1-4ubuntu0.6 \
+    llvm=1:10.0-50~exp1 \ 
+    libncursesw5-dev=6.2-0ubuntu2.1 \
+    tk-dev=8.6.9+1
+
+RUN cp -fv /usr/bin/gfortran-4.4 /usr/bin/g95
 
 ## from jl_base:
 RUN apt-get install --no-install-recommends --assume-yes -y \
@@ -124,7 +67,7 @@ RUN apt-get install --no-install-recommends -y \
     fftw-dev=2.1.5-4.2build2 \
     file=1:5.38-4 \
     gfortran=4:9.3.0-1ubuntu2 \
-   iptables=1.8.4-3ubuntu2.1 \
+    iptables=1.8.4-3ubuntu2.1 \
     libgfortran5=10.5.0-1ubuntu1~20.04 \
     libjpeg-dev=8c-2ubuntu8 \
     libncurses-dev=6.2-0ubuntu2.1 \
@@ -182,7 +125,7 @@ RUN apt-get install --no-install-recommends -y \
 RUN apt-get install --no-install-recommends -y \
     openbox=3.6.1-9ubuntu0.20.04.1 \
     xorg=1:7.7+19ubuntu14 \
-    vim=2:8.1.2269-1ubuntu5.22
+    vim=2:8.1.2269-1ubuntu5.23
 
 RUN apt-get clean \
   && rm -rf /var/lib/apt/lists/*
@@ -233,7 +176,7 @@ COPY init.sh /init.sh
 
 RUN git clone https://github.com/pyenv/pyenv.git /pyenv
 
-ARG python_version=3.10.2
+ARG python_version=3.10.14
 
 RUN echo 'export PYENV_ROOT=/pyenv; export PATH="/pyenv/bin:$PATH"' >> /etc/pyenvrc && \
     echo 'eval "$(pyenv init -)"' >> /etc/pyenvrc
@@ -276,9 +219,9 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
 #    bash build-heasoft.sh build
 
 WORKDIR /opt
-RUN wget http://www.isdc.unige.ch/download/osa/sw/heasoft/heasoft-Ubuntu_20.04_x86_6.tar.gz && \
-    tar xfz heasoft_Ubuntu_20.04_x86_6.tar.gz && \
-    rm heasoft_Ubuntu_20.04_x86_6.tar.gz
+RUN wget http://www.isdc.unige.ch/integral/download/osa/sw/heasoft/heasoft-Ubuntu_20.04_x86_6.tar.gz && \
+    tar xfz heasoft-Ubuntu_20.04_x86_6.tar.gz && \
+    rm heasoft-Ubuntu_20.04_x86_6.tar.gz
 
 WORKDIR /
 RUN p=$(ls -d /opt/heasoft/x86*/); echo "found HEADAS: $p"; echo 'export HEADAS="'$p'"; source $HEADAS/headas-init.sh' >> /init.sh
@@ -331,9 +274,9 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
 
 COPY tests /tests
 
-#COPY xstartup.sh /etc/
+WORKDIR /opt
+RUN sed "s+/opt/miniconda/bin/jupyter lab+HOME_OVERRRIDE=/home/\$USER source /init.sh;/opt/miniconda/bin/jupyter lab+" run.sh > run2.sh && \
+    mv run.sh run_orignal.sh && \
+    mv run2.sh run.sh
 
-#ENTRYPOINT bash -c 'export HOME_OVERRRIDE=/media/home; cd /media/home; source /init.sh; jupyter lab --ip 0.0.0.0 --no-browser'
-
-
-CMD [ "sh", "-c", "/opt/miniconda/bin/jupyter lab --ip 0.0.0.0 --port=1234 --ServerApp.password='' --ServerApp.token=''"]
+WORKDIR /
