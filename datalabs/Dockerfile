@@ -18,8 +18,29 @@ RUN apt-get install --no-install-recommends --assume-yes -y \
     python3-tk=3.8.10-0ubuntu1~20.04 \
     cabal-install=2.4.0.0-2build3
 
-# missing packages (needed??):
-# fpm compat-gcc-44 compat-gcc-44-c++ compat-gcc-44-c++.gfortran
+RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty main universe' >> /etc/apt/sources.list
+RUN echo 'deb http://dk.archive.ubuntu.com/ubuntu/ trusty-updates main universe' >> /etc/apt/sources.list
+
+RUN apt-get update -y
+RUN apt-get install -y \
+    curl=7.68.0-1ubuntu2.22 \
+    g++-4.4=4.4.7-8ubuntu1 \
+    gcc-4.4=4.4.7-8ubuntu1 \
+    gfortran-4.4=4.4.7-8ubuntu1
+
+RUN apt search libreadline6-dev libgfortran
+
+RUN apt-get -y install \
+    zlib1g-dev=1:1.2.11.dfsg-2ubuntu1.5 \
+    libreadline6=6.3-4ubuntu2 \
+    build-essential=12.8ubuntu1.1 \
+    libbz2-dev=1.0.8-2 \
+    libsqlite3-dev=3.31.1-4ubuntu0.6 \
+    llvm=1:10.0-50~exp1 \ 
+    libncursesw5-dev=6.2-0ubuntu2.1 \
+    tk-dev=8.6.9+1
+
+RUN cp -fv /usr/bin/gfortran-4.4 /usr/bin/g95
 
 ## from jl_base:
 RUN apt-get install --no-install-recommends --assume-yes -y \
@@ -64,7 +85,7 @@ RUN apt-get install --no-install-recommends -y \
     libglew-dev=2.1.0-4 \
     libavahi-compat-libdnssd1=0.7-4ubuntu7.3 \
     net-tools=1.60+git20180626.aebd88e-1ubuntu1 \
-    openssl=1.1.1f-1ubuntu2.20 \
+    openssl=1.1.1f-1ubuntu2.22 \
     patch=2.7.6-6 \
     python3-pip=20.0.2-5ubuntu1.10 \
     readline-common=8.0-4 \
@@ -88,7 +109,6 @@ RUN apt-get install --no-install-recommends -y --allow-downgrades \
     libncurses5-dev=6.2-0ubuntu2.1 \
     less=551-1ubuntu0.3
 
-
 RUN apt-get install --no-install-recommends -y \
     libxext6=2:1.3.4-0ubuntu1 \
     libxext-dev=2:1.3.4-0ubuntu1 \
@@ -102,7 +122,7 @@ RUN apt-get install --no-install-recommends -y \
 RUN apt-get install --no-install-recommends -y \
     openbox=3.6.1-9ubuntu0.20.04.1 \
     xorg=1:7.7+19ubuntu14 \
-    vim=2:8.1.2269-1ubuntu5.22
+    vim=2:8.1.2269-1ubuntu5.23
 
 RUN apt-get clean \
   && rm -rf /var/lib/apt/lists/*
@@ -153,7 +173,7 @@ COPY init.sh /init.sh
 
 RUN git clone https://github.com/pyenv/pyenv.git /pyenv
 
-ARG python_version=3.10.2
+ARG python_version=3.10.14
 
 RUN echo 'export PYENV_ROOT=/pyenv; export PATH="/pyenv/bin:$PATH"' >> /etc/pyenvrc && \
     echo 'eval "$(pyenv init -)"' >> /etc/pyenvrc
@@ -196,9 +216,9 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
 #    bash build-heasoft.sh build
 
 WORKDIR /opt
-RUN wget http://www.isdc.unige.ch/download/osa/sw/heasoft/heasoft-Ubuntu_20.04_x86_6.tar.gz && \
-    tar xfz heasoft_Ubuntu_20.04_x86_6.tar.gz && \
-    rm heasoft_Ubuntu_20.04_x86_6.tar.gz
+RUN wget http://www.isdc.unige.ch/integral/download/osa/sw/heasoft/heasoft-Ubuntu_20.04_x86_6.tar.gz && \
+    tar xfz heasoft-Ubuntu_20.04_x86_6.tar.gz && \
+    rm heasoft-Ubuntu_20.04_x86_6.tar.gz
 
 WORKDIR /
 RUN p=$(ls -d /opt/heasoft/x86*/); echo "found HEADAS: $p"; echo 'export HEADAS="'$p'"; source $HEADAS/headas-init.sh' >> /init.sh
@@ -256,4 +276,3 @@ RUN source /init.sh; pip install --no-cache-dir \
 
 COPY xstartup.sh /etc/
 
-# ENTRYPOINT bash -c 'export HOME_OVERRRIDE=/home/jovyan; cd /home/jovyan; source /init.sh; jupyter lab --ip 0.0.0.0 --no-browser'
