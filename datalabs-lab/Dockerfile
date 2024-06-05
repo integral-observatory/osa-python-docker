@@ -275,8 +275,10 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
 COPY tests /tests
 
 WORKDIR /opt
+
 RUN sed "s+/opt/miniconda/bin/jupyter lab+HOME_OVERRRIDE=/home/\$USER source /init.sh;/opt/miniconda/bin/jupyter lab+" run.sh > run2.sh && \
     mv run.sh run_orignal.sh && \
+    gzip run_orignal.sh && \
     mv run2.sh run.sh
 
 WORKDIR /
