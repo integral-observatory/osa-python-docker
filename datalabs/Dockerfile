@@ -271,8 +271,8 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
 
 COPY tests /tests
 
-RUN source /init.sh; pip install --no-cache-dir \
-    jupyterlab==4.0.12
+#RUN source /init.sh; pip install --no-cache-dir \
+#    jupyterlab==4.0.12
 
 COPY xstartup.sh /etc/
 

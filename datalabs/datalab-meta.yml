@@ -8,7 +8,7 @@ distribution.license: None
 domain: https://data.esa.int/esado/domainSCI
 thumbnailUrl: https://www.astro.unige.ch/mmoda/sites/all/themes/bootstrap_mmoda/favicon.ico
 language: english
-version: 0.1.0
+version: 0.1.1
  
 creator.name: Carlo Ferrigno
 instrument: ISGRI JEM-X
