@@ -1,7 +1,7 @@
 ## original: https://gitlab.astro.unige.ch/savchenk/osa-docker-python/-/blob/master/Dockerfile
 
 ARG X_BASE_VERSION=stable
-ARG REGISTRY=scidockreg.esac.esa.int:62530
+ARG REGISTRY=scidockreg.esac.esa.int:62510
 FROM ${REGISTRY}/datalabs/x_base:${X_BASE_VERSION}-20.4
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -81,7 +81,7 @@ RUN apt-get install --no-install-recommends -y \
     libgsl-dev=2.5+dfsg-6+deb10u1build0.20.04.1 \
     libxml2-dev=2.9.10+dfsg-5ubuntu0.20.04.7 \
     libsqlite3-dev=3.31.1-4ubuntu0.6 \
-    libmysqlclient-dev=8.0.36-0ubuntu0.20.04.1 \
+    libmysqlclient-dev=8.0.37-0ubuntu0.20.04.3 \
     libglew-dev=2.1.0-4 \
     libavahi-compat-libdnssd1=0.7-4ubuntu7.3 \
     net-tools=1.60+git20180626.aebd88e-1ubuntu1 \
@@ -192,7 +192,7 @@ RUN apt-get update && apt-get install -y \
 #    tar -zxvf hmake-linux-amd64.tar.gz && \
 #    rm -rf hmake-linux-amd64.tar.gz
 
-RUN pip install --no-cache-dir --upgrade pip==23.3.2 && \
+RUN pip install --no-cache-dir --upgrade pip==24.0 && \
     pip install --no-cache-dir --upgrade setuptools==69.0.3
 
 RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
