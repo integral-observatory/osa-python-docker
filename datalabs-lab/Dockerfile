@@ -279,6 +279,7 @@ WORKDIR /opt
 RUN sed "s+/opt/miniconda/bin/jupyter lab+HOME_OVERRRIDE=/home/\$USER source /init.sh;/opt/miniconda/bin/jupyter lab+" run.sh > run2.sh && \
     mv run.sh run_orignal.sh && \
     gzip run_orignal.sh && \
-    mv run2.sh run.sh
+    mv run2.sh run.sh && \
+    chmod a+x run.sh
 
 WORKDIR /
