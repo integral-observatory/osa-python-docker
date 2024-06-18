@@ -270,7 +270,17 @@ RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
     source /init.sh && \
     pip install --no-cache-dir \
     pymysql==1.1.0 \
-    peewee==3.17.0
+    peewee==3.17.0 
+
+# This is for Gallery notebooks
+
+RUN git clone https://gitlab.renkulab.io/astronomy/mmoda/ibis-isgri-spectrum.git /tmp/mirror \
+    && cp /tmp/mirror/environment.yml /media/ \
+    && cp /tmp/mirror/requirements.txt /media/ \
+    && cp /tmp/mirror/*.ipynb /media/ \
+    && conda env update -q -f /media/environment.yml || echo "Conda did not work!" \
+    && pip3 install --no-cache-dir --upgrade -r /media/requirements.txt || echo "Issues with requirements" \
+    && conda clean -y --all
 
 COPY tests /tests
 
