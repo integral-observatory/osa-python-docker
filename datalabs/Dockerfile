@@ -19,7 +19,7 @@ RUN apt-get install -y $(cat /media/list_packages.txt) \
   && rm -rf /var/lib/apt/lists/*
   
 RUN cp -fv /usr/bin/gfortran-4.4 /usr/bin/g95 \
-    ln -s /usr/lib64/libpcre.so.1 /usr/lib64/libpcre.so.0
+    && ln -s /usr/lib64/libpcre.so.1 /usr/lib64/libpcre.so.0
 
 # OSA
 WORKDIR /opt/
