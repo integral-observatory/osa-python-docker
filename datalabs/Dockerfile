@@ -103,8 +103,8 @@ RUN apt-get install --no-install-recommends -y \
 RUN apt-get install --no-install-recommends -y --allow-downgrades \
     bison=2:3.5.1+dfsg-1 \
     libgl1-mesa-glx=21.2.6-0ubuntu0.1~20.04.2 \
-    git-man=1:2.25.1-1ubuntu3.12 \
-    git=1:2.25.1-1ubuntu3.12 \
+    git-man=1:2.25.1-1ubuntu3.13 \
+    git=1:2.25.1-1ubuntu3.13 \
     git-lfs=2.9.2-1 \
     libncurses5-dev=6.2-0ubuntu2.1 \
     less=551-1ubuntu0.3
