@@ -1,0 +1,29 @@
+numpy
+scipy
+ipython
+jupyter
+matplotlib
+pandas
+astropy
+pymysql
+peewee
+nb2workflow[service,rdf,mmoda]>=1.3.30 
+astroquery
+numpy
+astropy!=3.0.*,!=3.1,!=3.1.1,>=2.0.12
+pandas
+#I need my version of pymosaic
+-e git+https://git@github.com/ferrigno/pymosaics.git#egg=pymosaic_fits
+ipynbname
+GitPython==3.1.27
+#oda_api from a certain branch (if needed)
+-e git+https://github.com/oda-hub/oda_api.git#egg=oda_api
+#oda-integral-wrapper
+-e git+https://gitlab.astro.unige.ch/oda/api-clients/oda_api_wrapper#egg=oda-integral-wrapper
+renku_aqs_annotation
+renku_graph_vis
+matplotlib
+nbconvert>=7.2.9
+ipympl
+#cdci_data_analysis
+-e git+https://github.com/oda-hub/dispatcher-app.git#egg=cdci_data_analysis
