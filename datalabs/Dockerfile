@@ -21,8 +21,20 @@ RUN apt-get install -y $(cat /media/list_packages.txt) \
 RUN cp -fv /usr/bin/gfortran-4.4 /usr/bin/g95 \
     && ln -s /usr/lib64/libpcre.so.1 /usr/lib64/libpcre.so.0
 
-# OSA
 WORKDIR /opt/
+RUN curl -fsSL -o Miniconda3-Linux-x86_64.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+&& bash Miniconda3-Linux-x86_64.sh -b -p /opt/miniconda \
+&& rm -rf Miniconda3-Linux-x86_64.sh
+ENV PATH /opt/miniconda/bin:$PATH
+RUN conda init \
+&& conda update --all \
+&& conda config --append channels conda-forge \
+&& conda env update -q -f /media/environment.yml || echo "Conda did not work!" \
+&& python -m pip --no-cache-dir --upgrade  install pip==24.1.1 setuptools==69.0.3 \
+&& pip install --no-cache-dir --upgrade -r /media/requirements.txt || echo "Issues with requirements" \
+&& conda clean -y --all
+
+# OSA
 ARG OSA_VERSION=11.2-2-g667521a3-20220403-190332
 ARG OSA_PLATFORM=Ubuntu_20.04_x86_64
 RUN if [ ${OSA_VERSION} == "10.2" ]; then \
@@ -61,27 +73,18 @@ COPY init.sh /init.sh
 
 ####
 
-# python
+# python (Why should this be necessary?)
 
-RUN git clone https://github.com/pyenv/pyenv.git /pyenv
+#RUN git clone https://github.com/pyenv/pyenv.git /pyenv
 
-ARG python_version=3.10.14
+#ARG python_version=3.10.14
 
-RUN echo 'export PYENV_ROOT=/pyenv; export PATH="/pyenv/bin:$PATH"' >> /etc/pyenvrc && \
-    echo 'eval "$(pyenv init -)"' >> /etc/pyenvrc && \
-    source /etc/pyenvrc && PYTHON_CONFIGURE_OPTS="--enable-shared"  CFLAGS="-fPIC" CXXFLAGS="-fPIC" pyenv install $python_version && pyenv versions
-RUN source /etc/pyenvrc && pyenv shell $python_version && pyenv global $python_version && pyenv versions && pyenv rehash
+#RUN echo 'export PYENV_ROOT=/pyenv; export PATH="/pyenv/bin:$PATH"' >> /etc/pyenvrc && \
+#    echo 'eval "$(pyenv init -)"' >> /etc/pyenvrc && \
+#    source /etc/pyenvrc && PYTHON_CONFIGURE_OPTS="--enable-shared"  CFLAGS="-fPIC" CXXFLAGS="-fPIC" pyenv install $python_version && pyenv versions
+#RUN source /etc/pyenvrc && pyenv shell $python_version && pyenv global $python_version && pyenv versions && pyenv rehash
 
-RUN echo 'source /etc/pyenvrc' >> /init.sh
-
-RUN pip install --no-cache-dir --upgrade pip==24.0 && \
-    pip install --no-cache-dir --upgrade setuptools==69.0.3
-
-RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
-    source /init.sh \
-    && conda env update -q -f /media/environment.yml || echo "Conda did not work!" \
-    && pip install --no-cache-dir --upgrade -r /media/requirements.txt || echo "Issues with requirements" \
-    && conda clean -y --all
+#RUN echo 'source /etc/pyenvrc' >> /init.sh
 
 
 WORKDIR /opt
@@ -95,7 +98,6 @@ RUN p=$(ls -d /opt/heasoft/x86*/); echo "found HEADAS: $p"; echo 'export HEADAS=
 RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
     source /init.sh && \
     git clone https://github.com/volodymyrss/heasoft-heasp.git /heasoft-heasp
-
 
 
 RUN export HOME_OVERRRIDE=/tmp/home && mkdir -pv /tmp/home/pfiles && \
