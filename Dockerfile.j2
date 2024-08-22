@@ -4,7 +4,7 @@ RUN yum install -y  gcc gcc-c++ make git patch openssl-devel zlib-devel readline
 
 RUN git clone git://github.com/yyuu/pyenv.git /pyenv
 
-ARG python_version=3.6.5
+ARG python_version=3.12
 
 RUN echo 'export PYENV_ROOT=/pyenv; export PATH="/pyenv/bin:$PATH"' >> /etc/pyenvrc && \
     echo 'eval "$(pyenv init -)"' >> /etc/pyenvrc

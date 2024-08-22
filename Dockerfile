@@ -77,7 +77,7 @@ ADD init.sh /init.sh
 
 RUN git clone https://github.com/yyuu/pyenv.git /pyenv
 
-ARG python_version=3.10.11
+ARG python_version=3.12
 
 RUN echo 'export PYENV_ROOT="/pyenv"' >> /etc/pyenvrc && \
     echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> /etc/pyenvrc && \
